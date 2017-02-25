@@ -1,0 +1,95 @@
+<!doctype>
+<html>
+
+<head>
+<script type="text/javascript" src="./node_modules/bignumber.js/bignumber.min.js"></script>
+<script type="text/javascript" src="./node_modules/web3/dist/web3.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<style>
+    .frame {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .label--uppercase {
+      text-transform: uppercase;
+    }
+
+    .label--highlight {
+      font-weight: 600;
+    }
+
+    .miner-controls {
+       display: inline-block;
+       float: right;
+    }
+
+    .heading-info{
+      clear: both;
+      content: "";
+      display: table;
+      width: 100%
+    }
+</style>
+
+</head>
+<body>
+<div class="frame">
+    <div class="page-header">
+      <h1>Miner Web UI</h1>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="heading-info panel-heading">
+        <span id="coinbase"></span>
+        <span class="miner-controls">
+          <button onclick="mine()" class="btn btn-sm btn-primary">Mine</button>
+          <button onclick="stop()" class="btn btn-sm btn-danger">Stop</button>
+        </span>
+        <span style="clear:both"></span>
+      </div>
+      <div class="panel-body">
+         <h4>
+           <span class="label label-info" id="balance"></span>
+         </h4>
+      </div>
+   </div>
+</div>
+</body>
+<script type="text/javascript">
+    <!--Running none locally on port 8081. Change address against your configuration-->
+    var nodeAddress = "http://localhost:8081";
+   
+    var web3 = new Web3();
+    web3.setProvider(new web3.providers.HttpProvider(nodeAddress));
+
+
+    var coinbase = "<span class='label--uppercase label--highlight'>Coinbase: </span>" + web3.eth.coinbase;
+
+    var coinbaseBox = document.getElementById("coinbase");
+    coinbaseBox.innerHTML = coinbase;
+    
+     
+     //there is pending pull request with those changes
+    function mine(){
+      web3.miner.start();
+    }
+
+    function stop(){
+
+      web3.miner.stop();
+    }    
+
+    var changes = "latest"
+
+    web3.eth.filter(changes).watch(function(error){
+     if(!error){
+       var balance = document.getElementById("balance");
+       var updatedBalance = web3.eth.getBalance(web3.eth.coinbase);
+       balance.innerHTML = updatedBalance;
+     }
+    });
+
+</script>
+</html>
